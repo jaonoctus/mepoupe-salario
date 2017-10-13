@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <title>Me Poupe!</title>
+  </head>
+  <body>
+    <div id="app">
+      <form @submit.prevent="update">
+        <label>Digite o seu salário:</label>
+        <input type="number" step="any" v-model="money">
+        <button type="submit">Calcular</button>
+      </form>
+      <div>
+        Guardar, projetos de médio (2 a 5 anos) e longo (mais de 5 anos) prazo: R${{ guardar }}<br />
+        Essencial: R${{ essencial }}<br />
+        Educação: R${{ educacao }}<br />
+        Fazer o que quiser: R${{ torrar}}<br />
+      </div>
+      <div>
+        <chart
+          :total="total"
+          :guardar="guardar"
+          :essencial="essencial"
+          :educacao="educacao"
+          :torrar="torrar"
+          :height="100"></chart>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.full.min.js"></script>
+    <script>
+    Vue.component('chart', {
+      extends: VueChartJs.Pie,
+      props: ['total', 'guardar', 'essencial', 'educacao', 'torrar'],
+      watch: { total () { this.render() } },
+      mounted () { this.render() },
+      methods: {
+        render () {
+          const { guardar, essencial, educacao, torrar } = this
+
+          this.renderChart({
+            labels: [
+              'Guardar (30%)',
+              'Essencial (55%)',
+              'Educação (5%)',
+              'Fazer o que quiser (10%)'
+            ],
+            datasets: [
+              {
+                backgroundColor: [ '#41B883', '#E46651', '#00D8FF', '#DD1B16' ],
+                data: [this.guardar, this.essencial, this.educacao, this.torrar]
+              }
+            ]
+          })
+        }
+      }
+    })
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        money: 0,
+        total: 0,
+        guardar: 0,
+        essencial: 0,
+        educacao: 0,
+        torrar: 0
+      },
+      methods: {
+        update () {
+          this.total = this.money
+          this.guardar = (this.total * 0.3).toFixed(2)
+          this.essencial = (this.total * 0.55).toFixed(2)
+          this.educacao = (this.total * 0.05).toFixed(2)
+          this.torrar = (this.total * 0.1).toFixed(2)
+        }
+      }
+    })
+    </script>
+  </body>
+</html>
